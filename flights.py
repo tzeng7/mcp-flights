@@ -1,6 +1,11 @@
 from mcp.server.fastmcp import FastMCP
 import requests
+from serpapi import GoogleSearch
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
+serp = os.getenv("SERPAPI")
 mcp = FastMCP("flights")
 
 @mcp.tool()
@@ -9,7 +14,7 @@ def find_flights(start: str,
                  departure_date: str,
                  return_date: str = None,
                  passengers: int = 1,
-                 economy_class: str = "economy",
+                 travel_class: str = "economy",
                  max_price: float = None,
                  max_stops: int = None,
                  airline: str = None):
@@ -28,7 +33,32 @@ def find_flights(start: str,
         airline: Airline name
     """
     
-    serp_api = "https://serpapi.com/search?engine=google_flights"
+    params = {
+        "engine": "google_flights",
+        "departure_id": start,
+        "arrival_id": end,
+        "outbound_date": departure_date,
+        "return_date": return_date,
+        "currency": "USD",
+        "travel_class": travel_class,
+        "stops": max_stops,
+        "max_price": max_price,
+        "hl": "en",
+        "api_key": serp
+    }    
+    
+    try:
+        search = GoogleSearch(params)
+        results = search.get_dict()
+        return results
+    except Exception as e:
+        print(f"Flight search failed. {e}")
+        
+
+        
+        
+    
+    
     
     
     
